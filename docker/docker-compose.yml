@@ -6,12 +6,10 @@ services:
 #
     proxy:
       image: traefik
-      command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+      command: --web --docker --docker.domain=docker.localhost
       ports:
         - "80:80"
         - "8080:8080"
-      networks:
-        - webgateway
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /dev/null:/traefik.toml
@@ -20,16 +18,14 @@ services:
 
 #
 #Service Discovery using Consul
-#
+#services:
     servicediscovery:
       image: consul
-      command: consul agent -dev -client 127.0.0.1
-      networks:
-        - webgateway
+      command: consul agent -ui --server --bootstrap --client 0.0.0.0 --data-dir=/tmp/consul
       ports:
         - "8400:8400"
         - "8500:8500"
-        - "8600:53/udp"
+        - "8600:8600"
       expose:
         - "8300"
         - "8301"
@@ -37,21 +33,16 @@ services:
         - "8302"
         - "8302/udp"
         - "8500"
+#
+#Automatic Service Discovery
+#
 
-#
-#Service Register to have containers automatically register with consul
-#
     registrator:
-      image: gliderlabs/registrator:master
-      command:  -internal consul://127.0.0.1:8500
-      links:
-        - servicediscovery
-      networks:
-        - webgateway
-      depends_on:
-        - servicediscovery
+      image: gliderlabs/registrator
+      command: -internal consul://servicediscovery:8500
+      restart: on-failure
       volumes:
-        - /var/run/docker.sock:/tmp/docker.sock
+          - /var/run/docker.sock:/tmp/docker.sock
 
 #
 #Webserver using Nginx
@@ -60,16 +51,15 @@ services:
        image: nginx:latest
        links:
          - servicediscovery
-       networks:
-         - webgateway
        volumes:
          - ./nginx_home:/nginx_home
          - ./default.conf:/etc/nginx/conf.d/default.conf
        labels:
         - "traefik.backend=nginx"
-        - "traefik.port=80"
+        - "traefik.port="
         - "traefik.frontend.rule=PathPrefixStrip: /boo"
 
-networks:
-  webgateway:
-    driver: bridge
+    phpfpm:
+      image: php:7-fpm
+      volumes:
+        - ./nginx_home:/nginx_home
