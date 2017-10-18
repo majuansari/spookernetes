@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      component: phpfpm
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 104.154.173.192/16
+    - podSelector:
+        matchLabels:
+          component: nginx
+    ports:
+    - protocol: TCP
+      port: 9000

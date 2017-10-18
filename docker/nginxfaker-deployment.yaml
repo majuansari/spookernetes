@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: spookernetes
+    component: nginxwannabe
+  name: nginxfaker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spookernetes
+      component: nginxwannabe
+  template:
+    metadata:
+      annotations:
+        version: v1
+      labels:
+        app: spookernetes
+        component: nginxwannabe
+    spec:
+      containers:
+      - image: nginx:latest
+        name: webserver
+        resources: {}
+        volumeMounts:
+        - mountPath: /nginx-home
+          name: nginx-root
+        - mountPath: /etc/nginx/conf.d/
+          name: nginxconfig
+      volumes:
+      - emptyDir: {}
+        name: nginx-root
+      - configMap:
+          name: nginx-example
+        name: nginxconfig
