@@ -9,24 +9,15 @@ Spookernetes:
 
 [ X ] Print 'boo' and Container ID
 
-[   ] Include a header with the hostname of Nginx that serves the request
+[  X ] Include a header with the hostname of Nginx that serves the request
 
-[   ] Make Docker-Compose File K8s friendly
+[  X ] Make Docker-Compose File K8s friendly
 
-[   ] Use Kompose and KubeCTL to get this set up on your GCP cluster
+[ X  ] Using network policies, make it so only certain instances of Nginx can talk to certain PHP FPMs
 
-[   ] Using network policies, make it so only certain instances of Nginx can talk to certain PHP FPMs
-
-[   ] Deploy a single Nginx to show that it cannot talk to other things
+[  x ] Deploy a single Nginx to show that it cannot talk to other things
 
 
-Phase One:
-"Create an app that is discoverable via Consul that responds with a Unique ID so you can see the load balancing through Traefik. Use Docker Compose to set this up"
-
-Small Summary of Phase One:
-
-Initially I went through some [katacodas](www.katacoda.com) to learn how to make Traefik work with
-Nginx. Once I finally had Traefik working, I went through the step by step [Consul Getting Started](https://www.consul.io/intro/index.html) which helped me gain some familiarity with Consul. However, that didn't make understanding how to set it up so it could automatically discover services any easier (and I'm still not sure with Docker Compose that is a thing I can do). I used Registrator to automatically register all services with Consul. In the end, I forgot I needed something that actually knows PHP to read my PHP files, which is why PHP FPM is just thrown in there.
 
 Questions, Issues, etc:
 
@@ -60,3 +51,7 @@ gRPC is a framework that makes it so an application can call methods on differen
 What is Docker Swarm?
 
 - Container Orchestration Tool
+
+What is a Dockerfile?
+
+- A [Dockerfile](https://docs.docker.com/engine/reference/builder/#format) is  file that contains commands to build images.
